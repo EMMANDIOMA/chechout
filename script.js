@@ -1,3 +1,4 @@
+// === Initial setup ===
 const Questions = [
   {
     question: "what is the first letter in the alphabets ?",
@@ -72,55 +73,88 @@ const Questions = [
     correct: 3,
   },
 ];
+
 const DisplayQuestion = document.querySelector("#displayquestion");
 const score = document.querySelector("#score");
 const main = document.querySelector("main");
 const Button = document.querySelectorAll("button");
+
 let currentQuestion = 0;
 let points = 0;
 
+// ✅ ADDED: To store user's answers and correctness
+let userAnswers = [];
+
+// === Display question and options ===
 const display = () => {
   DisplayQuestion.textContent = Questions[currentQuestion].question;
   Questions[currentQuestion].options.forEach((option, index) => {
     Button[index].textContent = option;
   });
-  Button.forEach((Button) => {
-    Button.style.backgroundColor = "";
+  Button.forEach((btn) => {
+    btn.style.backgroundColor = "";
   });
 };
 
+// ✅ UPDATED Check function to save answers and call showResult()
 const Check = (value, eachButton) => {
-  if (value === Questions[currentQuestion].correct) {
+  const correctIndex = Questions[currentQuestion].correct;
+
+  const userAnswer = {
+    question: Questions[currentQuestion].question,
+    selected: Questions[currentQuestion].options[value],
+    correct: Questions[currentQuestion].options[correctIndex],
+    isCorrect: value === correctIndex,
+  };
+
+  userAnswers.push(userAnswer);
+
+  if (userAnswer.isCorrect) {
     eachButton.style.backgroundColor = "green";
     points++;
   } else {
     eachButton.style.backgroundColor = "red";
   }
+
   score.textContent = points;
+
   setTimeout(() => {
     currentQuestion++;
     if (currentQuestion < Questions.length) {
       display();
     } else {
-      main.textContent = `Gameover!! your score is ${points}`;
+      showResult(); // ✅ CALL showResult after the last question
     }
   }, 2000);
 };
+
+// ✅ ADDED showResult function to display detailed feedback
 const showResult = () => {
-  let resultHTML = `<div class="text-white p-4"><h2 class="text-2xl mb-4">Game Over! Your Score: ${points}/${Questions.length}</h2><ul class="space-y-2">`;
+  let resultHTML = `
+    <div class="text-white p-4">
+      <h2 class="text-2xl mb-4">Game Over! Your Score: ${points}/${Questions.length}</h2>
+      <ul class="space-y-4">
+  `;
 
   userAnswers.forEach((item, index) => {
     resultHTML += `
-      <li>
+      <li class="p-2 border-b border-gray-600">
         <strong>Q${index + 1}:</strong> ${item.question}<br/>
         <span class="${item.isCorrect ? "text-green-400" : "text-red-400"}">
           Your Answer: ${item.selected} ${item.isCorrect ? "✓" : "✗"}
         </span><br/>
-        ${!item.isCorrect ? `Correct Answer: ${item.correct}` : ""}
-      </li>`;
+        ${
+          !item.isCorrect
+            ? `<span class="text-green-300">Correct Answer: ${item.correct}</span>`
+            : ""
+        }
+      </li>
+    `;
   });
 
   resultHTML += `</ul></div>`;
   main.innerHTML = resultHTML;
 };
+
+// Start the quiz
 display();
