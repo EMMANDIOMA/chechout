@@ -106,5 +106,21 @@ const Check = (value, eachButton) => {
     }
   }, 2000);
 };
+const showResult = () => {
+  let resultHTML = `<div class="text-white p-4"><h2 class="text-2xl mb-4">Game Over! Your Score: ${points}/${Questions.length}</h2><ul class="space-y-2">`;
 
+  userAnswers.forEach((item, index) => {
+    resultHTML += `
+      <li>
+        <strong>Q${index + 1}:</strong> ${item.question}<br/>
+        <span class="${item.isCorrect ? "text-green-400" : "text-red-400"}">
+          Your Answer: ${item.selected} ${item.isCorrect ? "✓" : "✗"}
+        </span><br/>
+        ${!item.isCorrect ? `Correct Answer: ${item.correct}` : ""}
+      </li>`;
+  });
+
+  resultHTML += `</ul></div>`;
+  main.innerHTML = resultHTML;
+};
 display();
